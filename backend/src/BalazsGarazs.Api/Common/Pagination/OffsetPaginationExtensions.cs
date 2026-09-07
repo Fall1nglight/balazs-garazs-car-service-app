@@ -8,11 +8,11 @@ public static class OffsetPaginationExtensions
         IQueryable<TResponseDto> query,
         PagedRequest request,
         CancellationToken cancellationToken,
-        SortDirection sortType = SortDirection.Descending
+        SortDirection sortDirection = SortDirection.Descending
     )
         where TResponseDto : class, IOffsetItem
     {
-        if (sortType == SortDirection.Descending)
+        if (sortDirection == SortDirection.Descending)
         {
             query = query
                 .OrderByDescending(item => item.CreatedAt)
