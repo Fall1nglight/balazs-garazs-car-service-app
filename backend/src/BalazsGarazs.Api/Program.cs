@@ -1,3 +1,4 @@
+using BalazsGarazs.Api.Data.Employees;
 using BalazsGarazs.Api.Startup;
 using DotNetEnv;
 using Serilog;
@@ -17,6 +18,13 @@ try
     builder.Services.AddApiServices(builder.Configuration);
 
     var app = builder.Build();
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+
     app.UseMiddlewares();
     app.MapEndpoints();
     app.Run();

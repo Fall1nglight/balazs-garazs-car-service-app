@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using BalazsGarazs.Api.Common.ExceptionHandlers;
+using BalazsGarazs.Api.Data.Employees;
 using BalazsGarazs.Api.Data.Shared.Db;
+using BalazsGarazs.Api.Data.Shared.Db.Seeder;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,22 +17,39 @@ public static class DependencyInjection
         IConfiguration configuration
     )
     {
+        AddUserSeederOptions(services, configuration);
         AddPersistence(services, configuration);
         AddAuthOptions(services, configuration);
-        AddAuthenticationAndAuthorization(services);
+        AddAuthenticationAndAuthorization(services, configuration);
         AddExceptionHandling(services);
         AddSerilogLogging(services, configuration);
         AddValidation(services);
 
+        services.AddEndpointsApiExplorer();
+        services.AddSwaggerGen();
+
         return services;
+    }
+
+    private static void AddUserSeederOptions(
+        IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services.Configure<UserSeederOptions>(
+            configuration.GetSection(UserSeederOptions.SectionName)
+        );
     }
 
     private static void AddPersistence(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options =>
-        {
-            options.UseNpgsql(configuration.GetConnectionString("PostgreSql"));
-        });
+        services.AddDbContext<AppDbContext>(
+            (serviceProvider, optionsBuilder) =>
+            {
+                optionsBuilder.UseNpgsql(configuration.GetConnectionString("PostgreSql"));
+                optionsBuilder.SeedWithFirstUser(serviceProvider);
+            }
+        );
     }
 
     private static void AddAuthOptions(
@@ -38,7 +57,30 @@ public static class DependencyInjection
         IConfiguration configuration
     ) { }
 
-    private static void AddAuthenticationAndAuthorization(IServiceCollection services) { }
+    private static void AddAuthenticationAndAuthorization(
+        IServiceCollection services,
+        IConfiguration configuration
+    )
+    {
+        services
+            .AddIdentity<Employee, IdentityRole<Guid>>()
+            .AddEntityFrameworkStores<AppDbContext>();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Lockout.AllowedForNewUsers = false;
+            options.User.RequireUniqueEmail = true;
+        });
+
+        // services
+        //     .AddAuthentication(option => { })
+        //     .AddGoogleOpenIdConnect(googleOptions =>
+        //     {
+        //         configuration.GetSection("Authentication:Google").Bind(googleOptions);
+        //     });
+        //
+        // services.AddAuthorization();
+    }
 
     private static void AddExceptionHandling(IServiceCollection services)
     {

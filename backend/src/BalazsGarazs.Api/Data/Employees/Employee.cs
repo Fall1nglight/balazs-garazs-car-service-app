@@ -1,12 +1,14 @@
-﻿namespace BalazsGarazs.Api.Data.Employees;
+﻿using BalazsGarazs.Api.Common.Pagination;
+using BalazsGarazs.Api.Data.Shared.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
-public class Employee
+namespace BalazsGarazs.Api.Data.Employees;
+
+public class Employee : IdentityUser<Guid>, ISoftDeletable, IOffsetItem
 {
-    public Guid Id { get; init; }
-    public string DisplayName { get; set; }
-    public string PhoneNumber { get; set; }
+    public string? DisplayName { get; set; }
     public DateTime CreatedAt { get; init; }
     public DateTime? UpdatedAt { get; set; }
-    public bool IsActive { get; set; }
+    public DateTime? LastLoginAt { get; set; }
     public bool IsDeleted { get; set; }
 }
