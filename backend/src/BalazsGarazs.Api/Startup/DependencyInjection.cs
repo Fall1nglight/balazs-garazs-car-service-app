@@ -1,9 +1,12 @@
 using System.Text.Json.Serialization;
+using BalazsGarazs.Api.Auth.Google;
 using BalazsGarazs.Api.Common.ExceptionHandlers;
 using BalazsGarazs.Api.Data.Employees;
 using BalazsGarazs.Api.Data.Shared.Db;
 using BalazsGarazs.Api.Data.Shared.Db.Seeder;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -63,23 +66,25 @@ public static class DependencyInjection
     )
     {
         services
-            .AddIdentity<Employee, IdentityRole<Guid>>()
+            .AddIdentity<Employee, IdentityRole<Guid>>(options =>
+            {
+                options.Lockout.AllowedForNewUsers = false;
+                options.User.RequireUniqueEmail = true;
+            })
             .AddEntityFrameworkStores<AppDbContext>();
 
-        services.Configure<IdentityOptions>(options =>
-        {
-            options.Lockout.AllowedForNewUsers = false;
-            options.User.RequireUniqueEmail = true;
-        });
+        services
+            .AddAuthentication()
+            .AddGoogle(
+                GoogleDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.ClientId = configuration["Authentication:Google:ClientId"]!;
+                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
+                }
+            );
 
-        // services
-        //     .AddAuthentication(option => { })
-        //     .AddGoogleOpenIdConnect(googleOptions =>
-        //     {
-        //         configuration.GetSection("Authentication:Google").Bind(googleOptions);
-        //     });
-        //
-        // services.AddAuthorization();
+        services.AddAuthorization();
     }
 
     private static void AddExceptionHandling(IServiceCollection services)
