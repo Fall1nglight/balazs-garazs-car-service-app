@@ -2,5 +2,5 @@
 
 public interface IOwnedEntity
 {
-    Guid UserId { get; }
+    Guid? UserId { get; }
 }

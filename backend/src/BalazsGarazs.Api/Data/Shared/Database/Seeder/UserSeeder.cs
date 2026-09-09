@@ -1,9 +1,7 @@
-﻿using BalazsGarazs.Api.Data.Employees;
+﻿using BalazsGarazs.Api.Data.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Serilog;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace BalazsGarazs.Api.Data.Shared.Db.Seeder;
 
@@ -43,18 +41,18 @@ public static class UserSeeder
             .ServiceProvider.GetRequiredService<IOptions<UserSeederOptions>>()
             .Value;
 
-        Employee initialEmployee = new Employee()
+        User initialUser = new User()
         {
             Email = config.Email,
             UserName = config.Username,
             CreatedAt = DateTime.UtcNow,
         };
 
-        UserManager<Employee> userManager = scope.ServiceProvider.GetRequiredService<
-            UserManager<Employee>
+        UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<
+            UserManager<User>
         >();
 
-        IdentityResult result = await userManager.CreateAsync(initialEmployee);
+        IdentityResult result = await userManager.CreateAsync(initialUser);
 
         if (!result.Succeeded)
         {
