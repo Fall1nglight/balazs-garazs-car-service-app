@@ -1,6 +1,6 @@
 ﻿namespace BalazsGarazs.Api.Data.Shared.Interfaces;
 
-public interface IOwnedEntity
+public interface IOwnableEntity
 {
-    Guid? UserId { get; }
+    Guid? CustomerId { get; }
 }
