@@ -1,9 +1,5 @@
 using System.Reflection;
-using BalazsGarazs.Api.Data.Employees;
-using BalazsGarazs.Api.Data.Shared.Db;
 using BalazsGarazs.Api.Data.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 namespace BalazsGarazs.Api.Startup;

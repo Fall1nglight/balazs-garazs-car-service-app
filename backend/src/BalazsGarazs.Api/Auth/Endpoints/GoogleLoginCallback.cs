@@ -1,11 +1,9 @@
-﻿using System.Runtime.InteropServices.ComTypes;
-using System.Security.Claims;
-using BalazsGarazs.Api.Data.Employees;
-using BalazsGarazs.Api.Data.Shared.Db;
+﻿using System.Security.Claims;
+using BalazsGarazs.Api.Data.Shared.Database;
 using BalazsGarazs.Api.Data.Shared.Interfaces;
+using BalazsGarazs.Api.Data.Users;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace BalazsGarazs.Api.Auth.Endpoints;
 
@@ -18,23 +16,23 @@ public class GoogleLoginCallback : IEndpoint
 
     private static async Task<Results<UnauthorizedHttpResult, Ok>> Handle(
         AppDbContext db,
-        SignInManager<Employee> signInManager,
-        UserManager<Employee> userManager,
+        SignInManager<User> signInManager,
+        UserManager<User> userManager,
         CancellationToken cancellationToken
     )
     {
-        var loginInfo = await signInManager.GetExternalLoginInfoAsync();
+        ExternalLoginInfo? loginInfo = await signInManager.GetExternalLoginInfoAsync();
         if (loginInfo == null)
             return TypedResults.Unauthorized();
 
-        var user = await userManager.FindByLoginAsync(
+        User? user = await userManager.FindByLoginAsync(
             loginInfo.LoginProvider,
             loginInfo.ProviderKey
         );
 
         if (user == null)
         {
-            var email = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
+            string? email = loginInfo.Principal.FindFirstValue(ClaimTypes.Email);
             if (string.IsNullOrWhiteSpace(email))
                 return TypedResults.Unauthorized();
 
@@ -42,12 +40,12 @@ public class GoogleLoginCallback : IEndpoint
             if (user == null)
                 return TypedResults.Unauthorized();
 
-            var addLoginAsync = await userManager.AddLoginAsync(user, loginInfo);
-            if (!addLoginAsync.Succeeded)
+            IdentityResult addLoginResult = await userManager.AddLoginAsync(user, loginInfo);
+            if (!addLoginResult.Succeeded)
                 return TypedResults.Unauthorized();
         }
 
-        var signInResult = await signInManager.ExternalLoginSignInAsync(
+        SignInResult signInResult = await signInManager.ExternalLoginSignInAsync(
             loginInfo.LoginProvider,
             loginInfo.ProviderKey,
             isPersistent: false

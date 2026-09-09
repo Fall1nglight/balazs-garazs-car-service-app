@@ -1,9 +1,7 @@
-﻿namespace BalazsGarazs.Api.Data.Shared.Db.Seeder;
+﻿namespace BalazsGarazs.Api.Data.Shared.Database.Seeder;
 
 public class UserSeederOptions
 {
     public const string SectionName = "UserSeeder";
-
-    public required string Email { get; set; }
-    public required string Username { get; set; }
+    public required string Email { get; init; }
 }

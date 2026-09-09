@@ -1,6 +1,7 @@
 ﻿namespace BalazsGarazs.Api.Data.Shared.Interfaces;
 
-public interface ISoftDeletable
+public interface ISoftDeleteItem
 {
     bool IsDeleted { get; set; }
+    DateTime? DeletedAt { get; set; }
 }

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace BalazsGarazs.Api.Data.Shared.Db.Seeder;
+namespace BalazsGarazs.Api.Data.Shared.Database.Seeder;
 
 public static class UserSeeder
 {
@@ -44,7 +44,7 @@ public static class UserSeeder
         User initialUser = new User()
         {
             Email = config.Email,
-            UserName = config.Username,
+            UserName = config.Email,
             CreatedAt = DateTime.UtcNow,
         };
 
@@ -52,11 +52,14 @@ public static class UserSeeder
             UserManager<User>
         >();
 
-        IdentityResult result = await userManager.CreateAsync(initialUser);
+        IdentityResult createResult = await userManager.CreateAsync(initialUser);
 
-        if (!result.Succeeded)
+        if (!createResult.Succeeded)
         {
-            string errors = string.Join("; ", result.Errors.Select(error => error.Description));
+            string errors = string.Join(
+                "; ",
+                createResult.Errors.Select(error => error.Description)
+            );
             throw new InvalidOperationException($"Could not seed the initial employee: {errors}");
         }
     }

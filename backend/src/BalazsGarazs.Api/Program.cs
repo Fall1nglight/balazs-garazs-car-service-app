@@ -1,4 +1,3 @@
-using BalazsGarazs.Api.Data.Employees;
 using BalazsGarazs.Api.Startup;
 using DotNetEnv;
 using Serilog;

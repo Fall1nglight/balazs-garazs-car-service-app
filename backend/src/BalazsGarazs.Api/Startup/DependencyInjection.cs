@@ -1,11 +1,10 @@
 using System.Text.Json.Serialization;
 using BalazsGarazs.Api.Auth.Google;
 using BalazsGarazs.Api.Common.ExceptionHandlers;
-using BalazsGarazs.Api.Data.Employees;
-using BalazsGarazs.Api.Data.Shared.Db;
-using BalazsGarazs.Api.Data.Shared.Db.Seeder;
+using BalazsGarazs.Api.Data.Shared.Database;
+using BalazsGarazs.Api.Data.Shared.Database.Seeder;
+using BalazsGarazs.Api.Data.Users;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +65,7 @@ public static class DependencyInjection
     )
     {
         services
-            .AddIdentity<Employee, IdentityRole<Guid>>(options =>
+            .AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Lockout.AllowedForNewUsers = false;
                 options.User.RequireUniqueEmail = true;
@@ -79,8 +78,7 @@ public static class DependencyInjection
                 GoogleDefaults.AuthenticationScheme,
                 options =>
                 {
-                    options.ClientId = configuration["Authentication:Google:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
+                    configuration.GetSection(GoogleAuthOptions.SectionName).Bind(options);
                 }
             );
 
