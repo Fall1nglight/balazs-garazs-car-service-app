@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BalazsGarazs.Api.Data.Appointments;
@@ -7,23 +7,23 @@ public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
 {
     public void Configure(EntityTypeBuilder<Appointment> builder)
     {
-        builder.ToTable(table =>
+        builder.ToTable(x =>
         {
-            table.HasCheckConstraint(
+            x.HasCheckConstraint(
                 "CK_Appointments_PositiveDuration",
                 """
                 "EstimatedDurationMinutes" > 0
                 """
             );
 
-            table.HasCheckConstraint(
+            x.HasCheckConstraint(
                 "CK_Appointments_Status",
                 """
                 "Status" IN ('Scheduled', 'Cancelled', 'ConvertedToWorkOrder')
                 """
             );
 
-            table.HasCheckConstraint(
+            x.HasCheckConstraint(
                 "CK_Appointments_ConversionState",
                 """
                 ("Status" = 'ConvertedToWorkOrder' AND "ConvertedToWorkOrderAt" IS NOT NULL)
@@ -33,6 +33,7 @@ public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
         });
 
         builder.HasKey(x => x.Id);
+
         builder.HasIndex(x => x.ContactName);
         builder.HasIndex(x => x.NormalizedContactPhoneNumber);
         builder.HasIndex(x => x.VehicleDescription);
@@ -45,7 +46,7 @@ public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
             .Property(x => x.NormalizedContactPhoneNumber)
             .HasMaxLength(40)
             .HasComputedColumnSql(
-                """regexp_replace("PhoneNumber", '[^0-9]', '', 'g')""",
+                """regexp_replace("ContactPhoneNumber", '[^0-9]', '', 'g')""",
                 stored: true
             )
             .IsRequired();
