@@ -1,4 +1,5 @@
 ﻿using BalazsGarazs.Api.Data.Cars;
+using BalazsGarazs.Api.Data.WorkOrders;
 
 namespace BalazsGarazs.Api.Data.Appointments;
 
@@ -19,7 +20,5 @@ public class Appointment
     public required DateTime CreatedAt { get; init; }
     public DateTime? UpdatedAt { get; set; }
     public uint Version { get; private set; }
-
-    // public List<AppointmentWorkItem> WorkItems { get; } = [];
-    // public WorkOrder? WorkOrder { get; set; }
+    public WorkOrder? WorkOrder { get; set; }
 }

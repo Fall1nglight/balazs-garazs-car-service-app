@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BalazsGarazs.Api.Data.Cars;
@@ -7,14 +7,14 @@ public class CarConfiguration : IEntityTypeConfiguration<Car>
 {
     public void Configure(EntityTypeBuilder<Car> builder)
     {
-        builder.ToTable(table =>
+        builder.ToTable(x =>
         {
-            table.HasCheckConstraint(
+            x.HasCheckConstraint(
                 "CK_Cars_NormalizedPlate_NotEmpty",
                 """length("NormalizedPlate") > 0"""
             );
 
-            table.HasCheckConstraint(
+            x.HasCheckConstraint(
                 "CK_Cars_ManufactureYear",
                 """
                 "ManufactureYear" IS NULL
@@ -23,16 +23,17 @@ public class CarConfiguration : IEntityTypeConfiguration<Car>
             );
         });
 
-        builder.HasKey(car => car.Id);
-        builder.HasIndex(car => car.NormalizedPlate).IsUnique();
-        builder.HasIndex(car => car.Vin).IsUnique();
-        builder.HasIndex(car => car.Brand);
-        builder.HasIndex(car => car.Model);
-        builder.HasIndex(car => car.Fuel);
-        builder.HasIndex(car => car.EngineCode);
-        builder.HasIndex(car => new { car.CreatedAt, car.Id });
+        builder.HasKey(x => x.Id);
 
-        builder.Property(car => car.Plate).IsRequired().HasMaxLength(20);
+        builder.HasIndex(x => x.NormalizedPlate).IsUnique();
+        builder.HasIndex(x => x.Vin);
+        builder.HasIndex(x => x.Brand);
+        builder.HasIndex(x => x.Model);
+        builder.HasIndex(x => x.Fuel);
+        builder.HasIndex(x => x.EngineCode);
+        builder.HasIndex(x => new { x.CreatedAt, x.Id });
+
+        builder.Property(x => x.Plate).HasMaxLength(20).IsRequired();
         builder
             .Property(x => x.NormalizedPlate)
             .HasMaxLength(20)
@@ -42,17 +43,16 @@ public class CarConfiguration : IEntityTypeConfiguration<Car>
             )
             .IsRequired();
 
-        builder.Property(car => car.Brand).HasMaxLength(100).IsRequired();
-        builder.Property(car => car.Model).HasMaxLength(100).IsRequired();
-        builder.Property(car => car.Vin).HasMaxLength(30);
-        builder.Property(car => car.EngineCode).HasMaxLength(30);
-        builder.Property(car => car.Fuel).HasConversion<string>().HasMaxLength(20);
-        builder.Property(car => car.Note).HasMaxLength(2000);
-        builder.Property(car => car.CreatedAt).IsRequired();
-        builder.Property(car => car.Version).IsRowVersion();
+        builder.Property(x => x.Brand).HasMaxLength(100).IsRequired();
+        builder.Property(x => x.Model).HasMaxLength(100).IsRequired();
+        builder.Property(x => x.Vin).HasMaxLength(30);
+        builder.Property(x => x.EngineCode).HasMaxLength(30);
+        builder.Property(x => x.Fuel).HasConversion<string>().HasMaxLength(20);
+        builder.Property(x => x.Note).HasMaxLength(2000);
+        builder.Property(x => x.Version).IsRowVersion();
 
         builder
-            .HasOne(x => x.Owner)
+            .HasOne(x => x.Customer)
             .WithMany(x => x.Cars)
             .HasForeignKey(x => x.CustomerId)
             .OnDelete(DeleteBehavior.SetNull);

@@ -46,6 +46,7 @@ public static class UserSeeder
             Email = config.Email,
             UserName = config.Email,
             CreatedAt = DateTime.UtcNow,
+            IsActive = true,
         };
 
         UserManager<User> userManager = scope.ServiceProvider.GetRequiredService<

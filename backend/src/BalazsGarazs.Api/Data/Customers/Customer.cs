@@ -1,6 +1,6 @@
-﻿using BalazsGarazs.Api.Common.Pagination;
+using BalazsGarazs.Api.Common.Pagination;
 using BalazsGarazs.Api.Data.Cars;
-using BalazsGarazs.Api.Data.Shared.Interfaces;
+using BalazsGarazs.Api.Data.WorkOrders;
 
 namespace BalazsGarazs.Api.Data.Customers;
 
@@ -17,7 +17,6 @@ public class Customer : IOffsetItem
     public DateTime? UpdatedAt { get; set; }
     public uint Version { get; private set; }
 
-    // nav proprs
-    public List<Car> Cars { get; init; } = [];
-    // WorkOrders
+    public List<Car> Cars { get; } = [];
+    public List<WorkOrder> WorkOrders { get; } = [];
 }
